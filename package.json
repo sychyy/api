@@ -1,7 +1,7 @@
 {
   "name": "sycze-api",
   "version": "1.0.0",
-  "description": "API Proxy untuk Popcat.xyz",
+  "description": "API Proxy untuk Rest Api dan Yotsuba AI",
   "main": "index.js",
   "scripts": {
     "start": "node index.js"
