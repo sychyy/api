@@ -109,6 +109,103 @@ app.get('/ytmp4', async (req, res) => {
     }
 });
 
+async function tiktokDl(url) {
+    return new Promise(async (resolve, reject) => {
+        try {
+            let data = [];
+            function formatNumber(integer) {
+                return Number(parseInt(integer)).toLocaleString().replace(/,/g, '.');
+            }
+
+            function formatDate(n, locale = 'en') {
+                let d = new Date(n * 1000);
+                return d.toLocaleDateString(locale, {
+                    weekday: 'long',
+                    day: 'numeric',
+                    month: 'long',
+                    year: 'numeric',
+                    hour: 'numeric',
+                    minute: 'numeric',
+                    second: 'numeric'
+                });
+            }
+
+            let domain = 'https://www.tikwm.com/api/';
+            let res = await axios.get(domain, {
+                params: {
+                    url: url,
+                    count: 12,
+                    cursor: 0,
+                    web: 1,
+                    hd: 1
+                },
+                headers: {
+                    'Accept': 'application/json',
+                    'User-Agent': 'Mozilla/5.0 (Linux; Android 10)'
+                }
+            });
+
+            let result = res.data.data;
+            if (!result) return reject('No data found');
+
+            if (result.images) {
+                result.images.map(v => data.push({ type: 'photo', url: v }));
+            } else {
+                if (result.wmplay) data.push({ type: 'watermark', url: result.wmplay });
+                if (result.play) data.push({ type: 'nowatermark', url: result.play });
+                if (result.hdplay) data.push({ type: 'nowatermark_hd', url: result.hdplay });
+            }
+
+            resolve({
+                status: true,
+                title: result.title,
+                taken_at: formatDate(result.create_time),
+                region: result.region,
+                id: result.id,
+                duration: result.duration + ' Seconds',
+                cover: result.cover,
+                data: data,
+                music_info: {
+                    id: result.music_info.id,
+                    title: result.music_info.title,
+                    author: result.music_info.author,
+                    album: result.music_info.album || null,
+                    url: result.music_info.play
+                },
+                stats: {
+                    views: formatNumber(result.play_count),
+                    likes: formatNumber(result.digg_count),
+                    comments: formatNumber(result.comment_count),
+                    shares: formatNumber(result.share_count),
+                    downloads: formatNumber(result.download_count)
+                },
+                author: {
+                    id: result.author.id,
+                    fullname: result.author.unique_id,
+                    nickname: result.author.nickname,
+                    avatar: result.author.avatar
+                }
+            });
+        } catch (e) {
+            reject(e);
+        }
+    });
+}
+
+// Endpoint TikTok Downloader
+app.get('/tiktok', async (req, res) => {
+    const url = req.query.url;
+    if (!url) return res.status(400).json({ error: "URL parameter is required" });
+
+    try {
+        const result = await tiktokDl(url);
+        res.json(result);
+    } catch (error) {
+        console.error('Error fetching TikTok:', error);
+        res.status(500).send('An error occurred while fetching TikTok video');
+    }
+});
+
 // Menjalankan server di port 3000 (jika dijalankan secara lokal)
 const port = process.env.PORT || 3000;
 app.listen(port, () => {
