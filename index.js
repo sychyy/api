@@ -225,10 +225,11 @@ app.get('/igdl', async (req, res) => {
     if (!url) return res.json({ status: false, message: "URL tidak ditemukan" });
 
     try {
-        const response = await axios.get(url, { responseType: 'json' });
+        const apiUrl = `https://api.siputzx.my.id/api/igdl?url=${encodeURIComponent(url)}`;
+        const response = await axios.get(apiUrl);
         res.json(response.data);
     } catch (error) {
-        res.json({ status: false, message: "Gagal mengambil data" });
+        res.json({ status: false, message: "Gagal mengambil data dari API IGDL" });
     }
 });
 
