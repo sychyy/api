@@ -129,8 +129,10 @@ async function tiktokDl(url) {
                 });
             }
 
-            let domain = 'https://www.tikwm.com/api/';
-            let res = await axios.get(domain, {
+            let domain = 'https://www.tikwm.com';
+            let apiUrl = `${domain}/api/`;
+            
+            let res = await axios.get(apiUrl, {
                 params: {
                     url: url,
                     count: 12,
@@ -154,8 +156,8 @@ async function tiktokDl(url) {
                 region: result.region,
                 id: result.id,
                 duration: result.duration + ' Seconds',
-                cover: result.cover,
-                video_url: result.hdplay, // Langsung ke link video tanpa watermark HD
+                cover: `${domain}${result.cover}`,  // Tambahkan domain
+                video_url: `${domain}${result.hdplay}`, // FIXED: Tambahkan domain ke link HD tanpa watermark
                 music_info: {
                     id: result.music_info.id,
                     title: result.music_info.title,
@@ -174,7 +176,7 @@ async function tiktokDl(url) {
                     id: result.author.id,
                     fullname: result.author.unique_id,
                     nickname: result.author.nickname,
-                    avatar: result.author.avatar
+                    avatar: `${domain}${result.author.avatar}` // FIXED: Tambahkan domain ke avatar
                 }
             });
         } catch (e) {
