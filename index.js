@@ -275,12 +275,11 @@ app.get('/memegen', async (req, res) => {
         console.log("✅ Response received:", contentType);
 
         if (!contentType.includes('image')) {
-            // Jika bukan gambar, berarti error → Cetak isi response
             console.error("❌ Response Data:", response.data.toString());
             return res.status(500).json({ error: "API Siputz mengembalikan respons tidak valid" });
         }
 
-        res.set('Content-Type', 'image/png');
+        res.set('Content-Type', contentType);
         res.send(response.data);
     } catch (error) {
         console.error("❌ Error:", error.response?.data?.toString() || error.message);
@@ -288,10 +287,8 @@ app.get('/memegen', async (req, res) => {
     }
 });
 
-// Menjalankan server di port 3000
-const port = process.env.PORT || 3000;
-app.listen(port, () => {
-    console.log(`Server running on port ${port}`);
+app.listen(3000, () => {
+    console.log('🚀 Server berjalan di https://api.sycze.my.id/memegen');
 });
 
 module.exports = app;
