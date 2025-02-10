@@ -10,6 +10,7 @@
     { "src": "/fluxai", "dest": "/index.js" },
     { "src": "/communism", "dest": "/index.js" },
     { "src": "/jail", "dest": "/index.js" },
+    { "src": "/spotify", "dest": "/index.js" },
     { "src": "/imdb", "dest": "/index.js" },
     { "src": "/igdl", "dest": "/index.js" },
     { "src": "/yotsuba", "dest": "/index.js" },
