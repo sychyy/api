@@ -205,13 +205,15 @@ app.get('/fluxai', async (req, res) => {
     if (!prompt) return res.status(400).json({ error: "Parameter 'prompt' diperlukan" });
 
     try {
-        // Panggil API Flux AI
+        // Panggil API Flux AI yang langsung mengirimkan gambar
         const response = await axios.get(`https://api.siputzx.my.id/api/ai/flux`, {
-            params: { prompt }
+            params: { prompt },
+            responseType: 'arraybuffer' // Pastikan response berupa gambar
         });
 
-        // Kirim hasilnya kembali ke client
-        res.json(response.data);
+        // Set header agar browser tahu ini gambar
+        res.set('Content-Type', 'image/png');
+        res.send(response.data);
     } catch (error) {
         console.error('Error fetching Flux AI:', error);
         res.status(500).json({ error: 'Gagal mendapatkan gambar dari Flux AI' });
