@@ -199,6 +199,25 @@ app.get('/tiktok', async (req, res) => {
     }
 });
 
+// Endpoint Flux AI
+app.get('/fluxai', async (req, res) => {
+    const prompt = req.query.prompt;
+    if (!prompt) return res.status(400).json({ error: "Parameter 'prompt' diperlukan" });
+
+    try {
+        // Panggil API Flux AI
+        const response = await axios.get(`https://api.siputzx.my.id/api/ai/flux`, {
+            params: { prompt }
+        });
+
+        // Kirim hasilnya kembali ke client
+        res.json(response.data);
+    } catch (error) {
+        console.error('Error fetching Flux AI:', error);
+        res.status(500).json({ error: 'Gagal mendapatkan gambar dari Flux AI' });
+    }
+});
+
 // Menjalankan server di port 3000
 const port = process.env.PORT || 3000;
 app.listen(port, () => {
