@@ -258,6 +258,29 @@ app.get('/spotify', async (req, res) => {
     }
 });
 
+// Endpoint Meme Generator
+app.get('/memegen', async (req, res) => {
+    const { link, top, bottom, font } = req.query;
+    if (!link || !top || !bottom || !font) {
+        return res.status(400).json({ error: "Parameter 'link', 'top', 'bottom', dan 'font' diperlukan" });
+    }
+
+    try {
+        // Request ke API Meme Generator
+        const response = await axios.get(`https://api.siputzx.my.id/api/m/memgen`, {
+            params: { link, top, bottom, font },
+            responseType: 'arraybuffer' // Mengatur response agar berupa gambar
+        });
+
+        // Set header agar browser tahu ini gambar
+        res.set('Content-Type', 'image/png');
+        res.send(response.data);
+    } catch (error) {
+        console.error('Error fetching Meme Generator:', error);
+        res.status(500).json({ error: 'Gagal mendapatkan gambar dari Meme Generator' });
+    }
+});
+
 // Menjalankan server di port 3000
 const port = process.env.PORT || 3000;
 app.listen(port, () => {
