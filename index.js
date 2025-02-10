@@ -239,6 +239,25 @@ app.get('/igdl', async (req, res) => {
     }
 });
 
+// Endpoint Spotify Downloader
+app.get('/spotify', async (req, res) => {
+    const url = req.query.url;
+    if (!url) return res.status(400).json({ error: "Parameter 'url' diperlukan" });
+
+    try {
+        // Request ke API Spotify Downloader
+        const response = await axios.get(`https://api.siputzx.my.id/api/d/spotify`, {
+            params: { url }
+        });
+
+        // Kirim hasilnya langsung ke pengguna
+        res.json(response.data);
+    } catch (error) {
+        console.error('Error fetching Spotify Downloader:', error);
+        res.status(500).json({ error: 'Gagal mendapatkan data dari Spotify Downloader' });
+    }
+});
+
 // Menjalankan server di port 3000
 const port = process.env.PORT || 3000;
 app.listen(port, () => {
