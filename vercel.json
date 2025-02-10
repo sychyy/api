@@ -1,0 +1,17 @@
+{
+  "version": 2,
+  "builds": [
+    {
+      "src": "index.js",
+      "use": "@vercel/node"
+    }
+  ],
+  "routes": [
+    { "src": "/sadcat", "dest": "/index.js" },
+    { "src": "/nokia", "dest": "/index.js" },
+    { "src": "/oogway", "dest": "/index.js" },
+    { "src": "/communism", "dest": "/index.js" },
+    { "src": "/jail", "dest": "/index.js" },
+    { "src": "/imdb", "dest": "/index.js" }
+  ]
+}
