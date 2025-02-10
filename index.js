@@ -267,16 +267,23 @@ app.get('/memegen', async (req, res) => {
 
     try {
         const apiUrl = `https://api.siputzx.my.id/api/m/memgen?link=${encodeURIComponent(link)}&top=${encodeURIComponent(top)}&bottom=${encodeURIComponent(bottom)}&font=${encodeURIComponent(font)}`;
-        console.log("🔍 Fetching from:", apiUrl); // Debugging URL API
+        console.log("🔍 Fetching from:", apiUrl);
 
         const response = await axios.get(apiUrl, { responseType: 'arraybuffer' });
 
-        console.log("✅ Response received:", response.headers['content-type']); // Cek tipe data dari API Siputz
+        const contentType = response.headers['content-type'];
+        console.log("✅ Response received:", contentType);
+
+        if (!contentType.includes('image')) {
+            // Jika bukan gambar, berarti error → Cetak isi response
+            console.error("❌ Response Data:", response.data.toString());
+            return res.status(500).json({ error: "API Siputz mengembalikan respons tidak valid" });
+        }
 
         res.set('Content-Type', 'image/png');
         res.send(response.data);
     } catch (error) {
-        console.error('❌ Error:', error.response ? error.response.data : error.message);
+        console.error("❌ Error:", error.response?.data?.toString() || error.message);
         res.status(500).json({ error: 'Gagal mendapatkan gambar dari Meme Generator' });
     }
 });
