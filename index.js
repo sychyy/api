@@ -220,6 +220,18 @@ app.get('/fluxai', async (req, res) => {
     }
 });
 
+app.get('/igdl', async (req, res) => {
+    const { url } = req.query;
+    if (!url) return res.json({ status: false, message: "URL tidak ditemukan" });
+
+    try {
+        const response = await axios.get(url, { responseType: 'json' });
+        res.json(response.data);
+    } catch (error) {
+        res.json({ status: false, message: "Gagal mengambil data" });
+    }
+});
+
 // Menjalankan server di port 3000
 const port = process.env.PORT || 3000;
 app.listen(port, () => {
