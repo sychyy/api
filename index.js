@@ -229,7 +229,17 @@ app.get('/igdl', async (req, res) => {
         const response = await axios.get(apiUrl);
         res.json(response.data);
     } catch (error) {
-        res.json({ status: false, message: "Gagal mengambil data dari API IGDL" });
+        console.error("Error fetching IGDL API:", error);
+        // JSON Fallback
+        res.json({
+            status: false,
+            message: "Gagal mengambil data dari API IGDL",
+            fallback: {
+                username: "instagram_user",
+                media_type: "video",
+                url: "https://fallback-video-url.com/sample.mp4"
+            }
+        });
     }
 });
 
