@@ -112,7 +112,6 @@ app.get('/ytmp4', async (req, res) => {
 async function tiktokDl(url) {
     return new Promise(async (resolve, reject) => {
         try {
-            let data = [];
             function formatNumber(integer) {
                 return Number(parseInt(integer)).toLocaleString().replace(/,/g, '.');
             }
@@ -148,14 +147,6 @@ async function tiktokDl(url) {
             let result = res.data.data;
             if (!result) return reject('No data found');
 
-            if (result.images) {
-                result.images.map(v => data.push({ type: 'photo', url: v }));
-            } else {
-                if (result.wmplay) data.push({ type: 'watermark', url: result.wmplay });
-                if (result.play) data.push({ type: 'nowatermark', url: result.play });
-                if (result.hdplay) data.push({ type: 'nowatermark_hd', url: result.hdplay });
-            }
-
             resolve({
                 status: true,
                 title: result.title,
@@ -164,7 +155,7 @@ async function tiktokDl(url) {
                 id: result.id,
                 duration: result.duration + ' Seconds',
                 cover: result.cover,
-                data: data,
+                video_url: result.hdplay, // Langsung ke link video tanpa watermark HD
                 music_info: {
                     id: result.music_info.id,
                     title: result.music_info.title,
@@ -206,7 +197,7 @@ app.get('/tiktok', async (req, res) => {
     }
 });
 
-// Menjalankan server di port 3000 (jika dijalankan secara lokal)
+// Menjalankan server di port 3000
 const port = process.env.PORT || 3000;
 app.listen(port, () => {
     console.log(`Server running on port ${port}`);
