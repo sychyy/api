@@ -316,7 +316,36 @@ app.get('/pooh', async (req, res) => {
     }
 });
 
+app.get('/wanted', async (req, res) => {
+    const { image } = req.query;
+
+    if (!image) {
+        return res.status(400).json({ error: "Parameter 'image' diperlukan" });
+    }
+
+    try {
+        const apiUrl = `https://api.popcat.xyz/wanted?image=${encodeURIComponent(image)}`;
+        console.log("🔍 Fetching from:", apiUrl);
+
+        const response = await axios.get(apiUrl, { responseType: 'arraybuffer' });
+
+        const contentType = response.headers['content-type'];
+        console.log("✅ Response received:", contentType);
+
+        if (!contentType.includes('image')) {
+            console.error("❌ Response Data:", response.data.toString());
+            return res.status(500).json({ error: "API Popcat mengembalikan respons tidak valid" });
+        }
+
+        res.set('Content-Type', contentType);
+        res.send(response.data);
+    } catch (error) {
+        console.error("❌ Error:", error.response?.data?.toString() || error.message);
+        res.status(500).json({ error: 'Gagal mendapatkan gambar dari API Popcat' });
+    }
+});
+
 app.listen(3000, () => {
-    console.log('🚀 Server berjalan di https://api.sycze.my.id/pooh');
+    console.log('🚀 Server berjalan di https://api.sycze.my.id/wanted');
 });
 module.exports = app;
