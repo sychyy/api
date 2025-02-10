@@ -77,6 +77,38 @@ app.get('/yotsuba', async (req, res) => {
     }
 });
 
+// Endpoint untuk YouTube to MP3
+app.get('/ytmp3', async (req, res) => {
+    const url = req.query.url;
+    if (!url) return res.status(400).json({ error: "URL parameter is required" });
+
+    const apiUrl = `https://ytdl.siputzx.my.id/api/convert?url=${encodeURIComponent(url)}&type=mp3`;
+
+    try {
+        const response = await axios.get(apiUrl);
+        res.json(response.data);
+    } catch (error) {
+        console.error('Error fetching YTMP3 API:', error);
+        res.status(500).send('An error occurred while fetching YouTube MP3 conversion');
+    }
+});
+
+// Endpoint untuk YouTube to MP4
+app.get('/ytmp4', async (req, res) => {
+    const url = req.query.url;
+    if (!url) return res.status(400).json({ error: "URL parameter is required" });
+
+    const apiUrl = `https://ytdl.siputzx.my.id/api/convert?url=${encodeURIComponent(url)}&type=mp4`;
+
+    try {
+        const response = await axios.get(apiUrl);
+        res.json(response.data);
+    } catch (error) {
+        console.error('Error fetching YTMP4 API:', error);
+        res.status(500).send('An error occurred while fetching YouTube MP4 conversion');
+    }
+});
+
 // Menjalankan server di port 3000 (jika dijalankan secara lokal)
 const port = process.env.PORT || 3000;
 app.listen(port, () => {
