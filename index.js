@@ -220,26 +220,22 @@ app.get('/fluxai', async (req, res) => {
     }
 });
 
+// Endpoint Instagram Downloader
 app.get('/igdl', async (req, res) => {
-    const { url } = req.query;
-    if (!url) return res.json({ status: false, message: "URL tidak ditemukan" });
+    const url = req.query.url;
+    if (!url) return res.status(400).json({ error: "Parameter 'url' diperlukan" });
 
     try {
-        const apiUrl = `https://api.siputzx.my.id/api/igdl?url=${encodeURIComponent(url)}`;
-        const response = await axios.get(apiUrl);
+        // Request ke API Instagram Downloader
+        const response = await axios.get(`https://api.siputzx.my.id/api/d/igdl`, {
+            params: { url }
+        });
+
+        // Kirim hasilnya langsung ke pengguna
         res.json(response.data);
     } catch (error) {
-        console.error("Error fetching IGDL API:", error);
-        // JSON Fallback
-        res.json({
-            status: false,
-            message: "Gagal mengambil data dari API IGDL",
-            fallback: {
-                username: "instagram_user",
-                media_type: "video",
-                url: "https://fallback-video-url.com/sample.mp4"
-            }
-        });
+        console.error('Error fetching Instagram Downloader:', error);
+        res.status(500).json({ error: 'Gagal mendapatkan data dari Instagram Downloader' });
     }
 });
 
