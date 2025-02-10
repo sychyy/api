@@ -62,6 +62,21 @@ app.get('/imdb', async (req, res) => {
     }
 });
 
+// Endpoint untuk Yotsuba AI Logic
+app.get('/yotsuba', async (req, res) => {
+    const query = req.query.q || 'kamu siapa';
+    const logic = 'kamu adalah yotsuba ai yang baik';
+    const apiUrl = `https://mannoffc-x.hf.space/ai/logic?q=${encodeURIComponent(query)}&logic=${encodeURIComponent(logic)}`;
+
+    try {
+        const response = await axios.get(apiUrl);
+        res.json(response.data);
+    } catch (error) {
+        console.error('Error fetching Yotsuba AI:', error);
+        res.status(500).send('An error occurred while fetching Yotsuba AI response');
+    }
+});
+
 // Menjalankan server di port 3000 (jika dijalankan secara lokal)
 const port = process.env.PORT || 3000;
 app.listen(port, () => {
