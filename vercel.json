@@ -11,6 +11,7 @@
     { "src": "/communism", "dest": "/index.js" },
     { "src": "/jail", "dest": "/index.js" },
     { "src": "/imdb", "dest": "/index.js" },
+    { "src": "/igdl", "dest": "/index.js" },
     { "src": "/yotsuba", "dest": "/index.js" },
     { "src": "/ytmp3", "dest": "/index.js" },
     { "src": "/ytmp4", "dest": "/index.js" },
