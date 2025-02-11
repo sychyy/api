@@ -12,6 +12,7 @@
     { "src": "/jail", "dest": "/index.js" },
     { "src": "/pooh", "dest": "/index.js" },
     { "src": "/spotify", "dest": "/index.js" },
+    { "src": "/unforgivable", "dest": "/index.js" },
     { "src": "/imdb", "dest": "/index.js" },
     { "src": "/wanted", "dest": "/index.js" },
     { "src": "/memegen", "dest": "/index.js" },
