@@ -388,10 +388,6 @@ app.get('/unforgivable', async (req, res) => {
     }
 });
 
-const express = require('express');
-const axios = require('axios');
-const app = express();
-
 app.get('/spotifysearch', async (req, res) => {
     const { s } = req.query;
 
