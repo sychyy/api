@@ -1,6 +1,5 @@
 const express = require('express');
 const axios = require('axios');
-const { RankCardBuilder } = require('discord-card-canvas');
 const app = express();
 
 async function fetchImage(url, res) {
