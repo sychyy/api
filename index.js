@@ -1,5 +1,6 @@
 const express = require('express');
 const axios = require('axios');
+const { RankCardBuilder } = require('discord-card-canvas');
 const app = express();
 
 async function fetchImage(url, res) {
@@ -374,7 +375,43 @@ app.get('/unforgivable', async (req, res) => {
     }
 });
 
+app.get('/leveling', async (req, res) => {
+    const { 
+        currentLvl, 
+        currentRank, 
+        currentXp, 
+        requiredXp = 1000, 
+        backgroundImgUrl, 
+        avatarImgUrl, 
+        nicknameText, 
+        userStatus 
+    } = req.query;
+
+    if (!currentLvl || !currentRank || !currentXp || !avatarImgUrl || !nicknameText || !userStatus) {
+        return res.status(400).json({ error: "Parameter tidak lengkap! Pastikan semua parameter tersedia." });
+    }
+
+    try {
+        const rankCard = await new RankCardBuilder({
+            currentLvl: parseInt(currentLvl),
+            currentRank: parseInt(currentRank),
+            currentXP: parseInt(currentXp),
+            requiredXP: parseInt(requiredXp),
+            backgroundImgURL: backgroundImgUrl || null,
+            avatarImgURL: avatarImgUrl,
+            nicknameText: { content: nicknameText, font: 'Nunito', color: '#0CA7FF' },
+            userStatus: userStatus,
+        }).build();
+
+        res.set('Content-Type', 'image/png');
+        res.send(rankCard.toBuffer());
+    } catch (error) {
+        console.error("❌ Error:", error.message);
+        res.status(500).json({ error: "Gagal membuat kartu level." });
+    }
+});
+
 app.listen(3000, () => {
-    console.log('🚀 Server berjalan di https://api.sycze.my.id/unforgivable');
+    console.log('🚀 Server berjalan di https://api.sycze.my.id/leveling');
 });
 module.exports = app;
