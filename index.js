@@ -444,7 +444,27 @@ app.get('/ad', async (req, res) => {
     }
 });
 
+// Endpoint Weather
+app.get('/weather', async (req, res) => {
+    const q = req.query.q;
+    if (!q) return res.status(400).json({ error: "Parameter 'q' diperlukan" });
+
+    try {
+        // Request ke API Weather dari Popcat
+        const response = await axios.get(`https://api.popcat.xyz/weather`, {
+            params: { q }
+        });
+
+        // Kirim hasilnya langsung ke pengguna
+        res.json(response.data);
+    } catch (error) {
+        console.error('Error fetching Weather API:', error);
+        res.status(500).json({ error: 'Gagal mendapatkan data cuaca dari Popcat' });
+    }
+});
+
 app.listen(3000, () => {
     console.log('🚀 Server berjalan di https://api.sycze.my.id/ad');
 });
+
 module.exports = app;

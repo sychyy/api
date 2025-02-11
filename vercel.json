@@ -12,6 +12,7 @@
     { "src": "/jail", "dest": "/index.js" },
     { "src": "/pooh", "dest": "/index.js" },
     { "src": "/ad", "dest": "/index.js" },
+    { "src": "/weather", "dest": "/index.js" },
     { "src": "/spotifydl", "dest": "/index.js" },
     { "src": "/spotifysearch", "dest": "/index.js" },
     { "src": "/unforgivable", "dest": "/index.js" },
