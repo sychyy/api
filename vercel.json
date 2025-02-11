@@ -15,7 +15,6 @@
     { "src": "/unforgivable", "dest": "/index.js" },
     { "src": "/imdb", "dest": "/index.js" },
     { "src": "/wanted", "dest": "/index.js" },
-    { "src": "/leveling", "dest": "/index.js" },
     { "src": "/memegen", "dest": "/index.js" },
     { "src": "/igdl", "dest": "/index.js" },
     { "src": "/yotsuba", "dest": "/index.js" },
