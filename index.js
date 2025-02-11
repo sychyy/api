@@ -22,7 +22,7 @@ app.get('/sadcat', (req, res) => {
 
 // Endpoint untuk Nokia
 app.get('/nokia', (req, res) => {
-    const image = req.query.image || 'https://cdn.popcat.xyz/popcat.png';
+    const image = req.query.image || 'https://files.catbox.moe/7o0wuc.jpg';
     const apiUrl = `https://api.popcat.xyz/nokia?image=${encodeURIComponent(image)}`;
     fetchImage(apiUrl, res);
 });
@@ -36,14 +36,14 @@ app.get('/oogway', (req, res) => {
 
 // Endpoint untuk Communism
 app.get('/communism', (req, res) => {
-    const image = req.query.image || 'https://cdn.popcat.xyz/popcat.png';
+    const image = req.query.image || 'https://files.catbox.moe/7o0wuc.jpg';
     const apiUrl = `https://api.popcat.xyz/communism?image=${encodeURIComponent(image)}`;
     fetchImage(apiUrl, res);
 });
 
 // Endpoint untuk Jail
 app.get('/jail', (req, res) => {
-    const image = req.query.image || 'https://cdn.popcat.xyz/popcat.png';
+    const image = req.query.image || 'https://files.catbox.moe/7o0wuc.jpg';
     const apiUrl = `https://api.popcat.xyz/jail?image=${encodeURIComponent(image)}`;
     fetchImage(apiUrl, res);
 });
@@ -65,7 +65,7 @@ app.get('/imdb', async (req, res) => {
 // Endpoint untuk Yotsuba AI Logic
 app.get('/yotsuba', async (req, res) => {
     const query = req.query.q || 'kamu siapa';
-    const logic = 'kamu adalah yotsuba ai yang baik';
+    const logic = 'kamu adalah yotsuba ai yang baik dan pembuatmu adalah YudzDev';
     const apiUrl = `https://mannoffc-x.hf.space/ai/logic?q=${encodeURIComponent(query)}&logic=${encodeURIComponent(logic)}`;
 
     try {
@@ -415,7 +415,36 @@ app.get('/spotifysearch', async (req, res) => {
     }
 });
 
+app.get('/ad', async (req, res) => {
+    const { image } = req.query;
+
+    if (!image) {
+        return res.status(400).json({ error: "Parameter 'image' diperlukan" });
+    }
+
+    try {
+        const apiUrl = `https://api.popcat.xyz/ad?image=${encodeURIComponent(image)}`;
+        console.log("🔍 Fetching from:", apiUrl);
+
+        const response = await axios.get(apiUrl, { responseType: 'arraybuffer' });
+
+        const contentType = response.headers['content-type'];
+        console.log("✅ Response received:", contentType);
+
+        if (!contentType.includes('image')) {
+            console.error("❌ Response Data:", response.data.toString());
+            return res.status(500).json({ error: "API Popcat mengembalikan respons tidak valid" });
+        }
+
+        res.set('Content-Type', contentType);
+        res.send(response.data);
+    } catch (error) {
+        console.error("❌ Error:", error.response?.data?.toString() || error.message);
+        res.status(500).json({ error: 'Gagal mendapatkan gambar dari API Popcat' });
+    }
+});
+
 app.listen(3000, () => {
-    console.log('🚀 Server berjalan di https://api.sycze.my.id/spotify');
+    console.log('🚀 Server berjalan di https://api.sycze.my.id/ad');
 });
 module.exports = app;
