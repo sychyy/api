@@ -345,7 +345,36 @@ app.get('/wanted', async (req, res) => {
     }
 });
 
+app.get('/unforgivable', async (req, res) => {
+    const { text } = req.query;
+
+    if (!text) {
+        return res.status(400).json({ error: "Parameter 'text' diperlukan" });
+    }
+
+    try {
+        const apiUrl = `https://api.popcat.xyz/unforgivable?text=${encodeURIComponent(text)}`;
+        console.log("🔍 Fetching from:", apiUrl);
+
+        const response = await axios.get(apiUrl, { responseType: 'arraybuffer' });
+
+        const contentType = response.headers['content-type'];
+        console.log("✅ Response received:", contentType);
+
+        if (!contentType.includes('image')) {
+            console.error("❌ Response Data:", response.data.toString());
+            return res.status(500).json({ error: "API Popcat mengembalikan respons tidak valid" });
+        }
+
+        res.set('Content-Type', contentType);
+        res.send(response.data);
+    } catch (error) {
+        console.error("❌ Error:", error.response?.data?.toString() || error.message);
+        res.status(500).json({ error: 'Gagal mendapatkan gambar dari API Popcat' });
+    }
+});
+
 app.listen(3000, () => {
-    console.log('🚀 Server berjalan di https://api.sycze.my.id/wanted');
+    console.log('🚀 Server berjalan di https://api.sycze.my.id/unforgivable');
 });
 module.exports = app;
