@@ -70,10 +70,18 @@ app.get('/yotsuba', async (req, res) => {
 
     try {
         const response = await axios.get(apiUrl);
-        res.json(response.data);
+        let data = response.data;
+
+        // Mengubah nilai "creator" menjadi "YudzDev"
+        if (data && typeof data === 'object' && data.creator) {
+            data.creator = "YudzDev";
+        }
+
+        console.log("✅ Response received and modified");
+        res.json(data);
     } catch (error) {
-        console.error('Error fetching Yotsuba AI:', error);
-        res.status(500).send('An error occurred while fetching Yotsuba AI response');
+        console.error("❌ Error:", error.response?.data || error.message);
+        res.status(500).json({ error: 'Gagal mendapatkan data dari Yotsuba AI' });
     }
 });
 
@@ -240,21 +248,27 @@ app.get('/igdl', async (req, res) => {
 });
 
 // Endpoint Spotify Downloader
-app.get('/spotify', async (req, res) => {
+app.get('/spotifydl', async (req, res) => {
     const url = req.query.url;
     if (!url) return res.status(400).json({ error: "Parameter 'url' diperlukan" });
 
     try {
         // Request ke API Spotify Downloader
-        const response = await axios.get(`https://api.siputzx.my.id/api/d/spotify`, {
-            params: { url }
-        });
+        const apiUrl = `https://mannoffc-x.hf.space/download/spotify?url=${encodeURIComponent(url)}`;
+        const response = await axios.get(apiUrl);
 
-        // Kirim hasilnya langsung ke pengguna
-        res.json(response.data);
+        let data = response.data;
+
+        // Ubah "creator" menjadi "YudzDev"
+        if (data && typeof data === 'object' && data.creator) {
+            data.creator = "YudzDev";
+        }
+
+        console.log("✅ Spotify response received and modified");
+        res.json(data);
     } catch (error) {
-        console.error('Error fetching Spotify Downloader:', error);
-        res.status(500).json({ error: 'Gagal mendapatkan data dari Spotify Downloader' });
+        console.error("❌ Error:", error.response?.data || error.message);
+        res.status(500).json({ error: "Gagal mendapatkan data dari Spotify Downloader" });
     }
 });
 
@@ -374,7 +388,38 @@ app.get('/unforgivable', async (req, res) => {
     }
 });
 
+const express = require('express');
+const axios = require('axios');
+const app = express();
+
+app.get('/spotifysearch', async (req, res) => {
+    const { s } = req.query;
+
+    if (!s) {
+        return res.status(400).json({ error: "Parameter 's' diperlukan" });
+    }
+
+    try {
+        const apiUrl = `https://mannoffc-x.hf.space/search/spotify?s=${encodeURIComponent(s)}`;
+        console.log("🔍 Fetching from:", apiUrl);
+
+        const response = await axios.get(apiUrl);
+        let data = response.data;
+
+        // Mengubah nilai "creator" menjadi "YudzDev"
+        if (data && typeof data === 'object') {
+            data.creator = "YudzDev";
+        }
+
+        console.log("✅ Response received and modified");
+        res.json(data);
+    } catch (error) {
+        console.error("❌ Error:", error.response?.data || error.message);
+        res.status(500).json({ error: 'Gagal mendapatkan data dari API Spotify' });
+    }
+});
+
 app.listen(3000, () => {
-    console.log('🚀 Server berjalan di https://api.sycze.my.id/leveling');
+    console.log('🚀 Server berjalan di https://api.sycze.my.id/spotify');
 });
 module.exports = app;
