@@ -11,6 +11,12 @@ const categories = [
     "dance", "cringe"
 ];
 
+const nsfw = [
+"waifu",
+"neko",
+"trap",
+"blowjob"
+];
 async function fetchImage(url, res) {
     try {
         const response = await axios.get(url, { responseType: 'arraybuffer' });
@@ -484,6 +490,22 @@ categories.forEach(category => {
         } catch (error) {
             console.error(`Error fetching ${category}:`, error);
             res.status(500).json({ error: `Gagal mengambil data untuk kategori ${category}` });
+        }
+    });
+});
+
+// Membuat endpoint dinamis berdasarkan kategori
+categories.forEach(nsfw => {
+    app.get(`/${nsfw}`, async (req, res) => {
+        try {
+            // Request ke API waifu.pics
+            const response = await axios.get(`https://api.waifu.pics/nsfw/${nsfw}`);
+            
+            // Kirim hasilnya langsung ke pengguna
+            res.json(response.data);
+        } catch (error) {
+            console.error(`Error fetching ${nsfw}:`, error);
+            res.status(500).json({ error: `Gagal mengambil data untuk kategori ${nsfw}` });
         }
     });
 });
