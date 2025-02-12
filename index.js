@@ -2,7 +2,7 @@
 import express from 'express';
 import axios from 'axios';
 import fetch from 'node-fetch';
-import cheerio from 'cheerio';
+import * as cheerio from 'cheerio';
 const bingUrl = 'https://www.bing.com';
 const app = express();
 
