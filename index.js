@@ -1,9 +1,6 @@
 // Import module
-import express from 'express';
+const express = require('express');
 const axios = require('axios');
-import fetch from 'node-fetch';
-import * as cheerio from 'cheerio';
-const bingUrl = 'https://www.bing.com';
 const app = express();
 
 // Daftar kategori yang tersedia
@@ -767,120 +764,6 @@ app.get('/pornhub', async (req, res) => {
         console.error('Error fetching Pornhub Logo API:', error);
         res.status(500).json({ error: 'Gagal mendapatkan data dari Pornhub Logo API' });
     }
-});
-
-/**
- * Base By Yuda
- * Created On 20/1/2025
- * Contact Me on wa.me/62882008702155
- * Supported By Gemini - Ai
-*/
-
-class BingApi {
-  constructor(cookie) {
-    this.cookie = cookie;
-    this.headers = {
-      'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:120.0) Gecko/20100101 Firefox/120.0',
-      Accept: 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8',
-      'Accept-Language': 'en-US,en;q=0.5',
-      'Content-Type': 'application/x-www-form-urlencoded',
-      'Upgrade-Insecure-Requests': '1',
-      Cookie: `_U=${cookie};`,
-      'X-Forwarded-For': `20.${this.getRandomNum()}.${this.getRandomNum()}.${this.getRandomNum()}`
-    };
-  }
-
-  async createImages(prompt, isSlowMode) {
-    try {
-      const payload = `q=${encodeURIComponent(prompt)}`;
-      let response = await this.sendRequest(isSlowMode, payload);
-      if (response.status === 200) {
-        const eventId = response.headers.get('x-eventid');
-        return await this.retrieveImages(eventId);
-      } else {
-        throw 'Gagal memproses gambar';
-      }
-    } catch (error) {
-      console.log(`Error: ${error}`);
-    }
-  }
-
-  getRandomNum() {
-    return Math.floor(Math.random() * 254) + 1;
-  }
-
-  async sendRequest(isSlowMode, payload) {
-    try {
-      return await fetch(`${bingUrl}/images/create?${payload}&rt=${isSlowMode ? '3' : '4'}`, {
-        headers: this.headers,
-        method: 'POST'
-      });
-    } catch (error) {
-      console.log('Error in sendRequest:', error);
-    }
-  }
-
-  async retrieveImages(eventId) {
-    try {
-      while (true) {
-        const images = await fetch(`${bingUrl}/images/create/async/results/1-${eventId}`, {
-          headers: this.headers,
-          method: 'GET'
-        });
-
-        const html = await images.text();
-        if (html.includes(`"errorMessage":"Pending"`)) throw 'Error occurred';
-
-        let results = [];
-        if (html === '') {
-          await new Promise((resolve) => setTimeout(resolve, 5000));
-          continue;
-        }
-
-        const $ = cheerio.load(html);
-        $('.mimg').each((i, el) => {
-          const badLink = $(el).attr('src');
-          const goodLink = badLink.split('?')[0]; // Hapus parameter URL
-          results.push(goodLink);
-        });
-
-        return results;
-      }
-    } catch (error) {
-      console.log(`Error in retrieveImages: ${error}`);
-    }
-  }
-}
-
-const apikyst = [
-  '1-8CNXA-k5mm0ruZAUfVI14pAtOvuHOVCTxWg3u6SsBeT4u9FCX5GLLNhFhMDFMEGoRkGPrhbwByZ9l-W5RpnCMVcXqv3d-eSkqB2jyOj7Ib2HnvF9qN1DeXNXVfrTp4um633acUvBwVDVBRBHDnVKRqfbcB_giDh_Yr3d0hIC5dgpM4sU-VgPk-h5F8R6Rlby5Qpdo4RGKeCtMpKlzyBDA',
-  '1WdAN6NWWReTpe8bUwYzaxi1pd4ftHnVlnnW1cWoheoYgBA12UUrWG4BIi8ccOKMN3nWt1yZeDDJJugsje9Bw-k6i2yFNOHLuC9NlCjBtmZhxmcgYwIKypNCfFC2WWwWXHqbl5mLsdA-dIw9lHEXTBrF2sxPHPVBmnvZlAJKUiQ6WZrrbP28V4rSDdovN6otPA6VfLpVSwAJ7DYuLHwVIZg',
-  '1ttZrlV0EfkbC3IXLYJrSExXotu4nothyxA6tFzP_N4Opx-bkeE3HckcDhJaN-Yl7hdAEm5hnvf9X52aT30ymsgefhXcEFCQCR15GZwumOZy3YXBTrjPwx0dqP8OC1hkU8PwVHFi3hNJfWy6KZ5fhQiTgs3wPL_1nIWRwEpFLJ1BFyOkLVC5SelRk4Msq0R5t1DP3HSAPLz7Pwc9o_iwmow'
-];
-
-const apikeybing = apikyst[Math.floor(apikyst.length * Math.random())];
-
-app.get('/bingimg', async (req, res) => {
-  const prompt = req.query.prompt;
-  if (!prompt) return res.status(400).json({ error: "Parameter 'prompt' diperlukan" });
-
-  try {
-    const bing = new BingApi(apikeybing);
-    const images = await bing.createImages(prompt, false);
-
-    if (images.length > 0) {
-      res.json({
-        creator: "YudzDev",
-        status: "success",
-        images
-      });
-    } else {
-      res.status(500).json({ error: "Gagal mendapatkan gambar" });
-    }
-  } catch (error) {
-    console.error('Error fetching Bing Image Generator:', error);
-    res.status(500).json({ error: 'Gagal mendapatkan gambar dari Bing' });
-  }
 });
 
 app.listen(3000, () => {
