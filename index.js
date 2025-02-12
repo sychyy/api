@@ -12,10 +12,10 @@ const categories = [
 ];
 
 const nsfw = [
-"waifu",
-"neko",
-"trap",
-"blowjob"
+"waifunsfw",
+"nekonsfw",
+"trapnsfw",
+"blowjobnsfw"
 ];
 async function fetchImage(url, res) {
     try {
