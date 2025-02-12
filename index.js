@@ -510,6 +510,44 @@ nsfwCategories.forEach(category => {
     });
 });
 
+// Endpoint XNXX
+app.get('/xnxx', async (req, res) => {
+    const message = req.query.message;
+    if (!message) return res.status(400).json({ error: "Parameter 'message' diperlukan" });
+
+    try {
+        // Request ke API Agatz XNXX
+        const response = await axios.get(`https://api.agatz.xyz/api/xnxx`, {
+            params: { message }
+        });
+
+        // Kirim hasilnya langsung ke pengguna
+        res.json(response.data);
+    } catch (error) {
+        console.error('Error fetching XNXX API:', error);
+        res.status(500).json({ error: 'Gagal mendapatkan data dari XNXX API' });
+    }
+});
+
+// Endpoint XNXX Downloader
+app.get('/xnxxdown', async (req, res) => {
+    const url = req.query.url;
+    if (!url) return res.status(400).json({ error: "Parameter 'url' diperlukan" });
+
+    try {
+        // Request ke API Agatz XNXX Downloader
+        const response = await axios.get(`https://api.agatz.xyz/api/xnxxdown`, {
+            params: { url }
+        });
+
+        // Kirim hasilnya langsung ke pengguna
+        res.json(response.data);
+    } catch (error) {
+        console.error('Error fetching XNXX Downloader API:', error);
+        res.status(500).json({ error: 'Gagal mendapatkan data dari XNXX Downloader API' });
+    }
+});
+
 app.listen(3000, () => {
     console.log('🚀 Server berjalan di https://api.sycze.my.id/ad');
 });
