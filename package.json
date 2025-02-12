@@ -1,7 +1,8 @@
 {
   "name": "sycze-api",
   "version": "1.0.0",
-  "description": "API Proxy untuk Rest Api dan Yotsuba AI",
+  "description": "API Proxy untuk Rest API dan Bing AI",
+  "type": "module",
   "main": "index.js",
   "scripts": {
     "start": "node index.js"
@@ -9,7 +10,7 @@
   "dependencies": {
     "express": "^4.18.2",
     "axios": "^1.5.1",
-    "cheerio": "1.0.0",
-    "node-fetch": "3.3.2"
+    "cheerio": "^1.0.0",
+    "node-fetch": "^3.3.2"
   }
 }

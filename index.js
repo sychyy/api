@@ -1,8 +1,8 @@
 // Import module
-const express = require('express');
-const axios = require('axios');
-const fetch = require('node-fetch');
-const cheerio = require('cheerio');
+import express from 'express';
+import axios from 'axios';
+import fetch from 'node-fetch';
+import cheerio from 'cheerio';
 const bingUrl = 'https://www.bing.com';
 const app = express();
 
