@@ -516,16 +516,33 @@ app.get('/xnxx', async (req, res) => {
     if (!message) return res.status(400).json({ error: "Parameter 'message' diperlukan" });
 
     try {
-        // Request ke API Agatz XNXX
         const response = await axios.get(`https://api.agatz.xyz/api/xnxx`, {
             params: { message }
         });
 
-        // Kirim hasilnya langsung ke pengguna
-        res.json(response.data);
+        let modifiedData = { ...response.data, creator: "YudzDev" };
+        res.json(modifiedData);
     } catch (error) {
         console.error('Error fetching XNXX API:', error);
         res.status(500).json({ error: 'Gagal mendapatkan data dari XNXX API' });
+    }
+});
+
+// Endpoint XVIDEO
+app.get('/xvideo', async (req, res) => {
+    const message = req.query.message;
+    if (!message) return res.status(400).json({ error: "Parameter 'message' diperlukan" });
+
+    try {
+        const response = await axios.get(`https://api.agatz.xyz/api/xvideo`, {
+            params: { message }
+        });
+
+        let modifiedData = { ...response.data, creator: "YudzDev" };
+        res.json(modifiedData);
+    } catch (error) {
+        console.error('Error fetching XVIDEO API:', error);
+        res.status(500).json({ error: 'Gagal mendapatkan data dari XVIDEO API' });
     }
 });
 
@@ -535,16 +552,69 @@ app.get('/xnxxdown', async (req, res) => {
     if (!url) return res.status(400).json({ error: "Parameter 'url' diperlukan" });
 
     try {
-        // Request ke API Agatz XNXX Downloader
         const response = await axios.get(`https://api.agatz.xyz/api/xnxxdown`, {
             params: { url }
         });
 
-        // Kirim hasilnya langsung ke pengguna
-        res.json(response.data);
+        let modifiedData = { ...response.data, creator: "YudzDev" };
+        res.json(modifiedData);
     } catch (error) {
         console.error('Error fetching XNXX Downloader API:', error);
         res.status(500).json({ error: 'Gagal mendapatkan data dari XNXX Downloader API' });
+    }
+});
+
+// Endpoint XVIDEO Downloader
+app.get('/xvideodown', async (req, res) => {
+    const url = req.query.url;
+    if (!url) return res.status(400).json({ error: "Parameter 'url' diperlukan" });
+
+    try {
+        const response = await axios.get(`https://api.agatz.xyz/api/xvideodown`, {
+            params: { url }
+        });
+
+        let modifiedData = { ...response.data, creator: "YudzDev" };
+        res.json(modifiedData);
+    } catch (error) {
+        console.error('Error fetching XVIDEO Downloader API:', error);
+        res.status(500).json({ error: 'Gagal mendapatkan data dari XVIDEO Downloader API' });
+    }
+});
+
+// Endpoint Lirik Lagu
+app.get('/lirik', async (req, res) => {
+    const message = req.query.message;
+    if (!message) return res.status(400).json({ error: "Parameter 'message' diperlukan" });
+
+    try {
+        const response = await axios.get(`https://api.agatz.xyz/api/lirik`, {
+            params: { message }
+        });
+
+        let modifiedData = { ...response.data, creator: "YudzDev" };
+        res.json(modifiedData);
+    } catch (error) {
+        console.error('Error fetching Lirik API:', error);
+        res.status(500).json({ error: 'Gagal mendapatkan lirik dari API' });
+    }
+});
+
+// Endpoint Pinterest Image Search
+app.get('/pinsearch', async (req, res) => {
+    const message = req.query.message;
+    if (!message) return res.status(400).json({ error: "Parameter 'message' diperlukan" });
+
+    try {
+        const response = await axios.get(`https://api.agatz.xyz/api/pinsearch`, {
+            params: { message }
+        });
+
+        let modifiedData = { ...response.data, creator: "YudzDev" };
+        res.json(modifiedData);
+    } catch (error) {
+        console.error('Error fetching Pinterest Search API:', error);
+        res.status(500).json({ error: 'Gagal mendapatkan gambar dari API' });
     }
 });
 
