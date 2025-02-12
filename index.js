@@ -618,6 +618,135 @@ app.get('/pinsearch', async (req, res) => {
     }
 });
 
+// Endpoint OpenAI Prompt
+app.get('/openai-prompt', async (req, res) => {
+    const { prompt, msg } = req.query;
+    if (!prompt || !msg) return res.status(400).json({ error: "Parameter 'prompt' dan 'msg' diperlukan" });
+
+    try {
+        const response = await axios.get(`https://api.skyzopedia.us.kg/api/ai/openai-prompt`, {
+            params: { prompt, msg }
+        });
+
+        let modifiedData = { ...response.data, creator: "YudzDev" };
+        res.json(modifiedData);
+    } catch (error) {
+        console.error('Error fetching OpenAI Prompt API:', error);
+        res.status(500).json({ error: 'Gagal mendapatkan data dari OpenAI Prompt API' });
+    }
+});
+
+// Endpoint GPT-3.5 Turbo
+app.get('/gpt-3-5-turbo', async (req, res) => {
+    const text = req.query.text;
+    if (!text) return res.status(400).json({ error: "Parameter 'text' diperlukan" });
+
+    try {
+        const response = await axios.get(`https://api.skyzopedia.us.kg/api/ai/gpt-3-5-turbo`, {
+            params: { text }
+        });
+
+        let modifiedData = { ...response.data, creator: "YudzDev" };
+        res.json(modifiedData);
+    } catch (error) {
+        console.error('Error fetching GPT-3.5 Turbo API:', error);
+        res.status(500).json({ error: 'Gagal mendapatkan data dari GPT-3.5 Turbo API' });
+    }
+});
+
+// Endpoint Google Image Search
+app.get('/gimage', async (req, res) => {
+    const q = req.query.q;
+    if (!q) return res.status(400).json({ error: "Parameter 'q' diperlukan" });
+
+    try {
+        const response = await axios.get(`https://api.skyzopedia.us.kg/api/search/gimage`, {
+            params: { q }
+        });
+
+        let modifiedData = { ...response.data, creator: "YudzDev" };
+        res.json(modifiedData);
+    } catch (error) {
+        console.error('Error fetching Google Image API:', error);
+        res.status(500).json({ error: 'Gagal mendapatkan gambar dari Google Image API' });
+    }
+});
+
+// Endpoint Instagram Downloader (Menggunakan API lolhuman)
+app.get('/instagram', async (req, res) => {
+    const url = req.query.url;
+    if (!url) return res.status(400).json({ error: "Parameter 'url' diperlukan" });
+
+    try {
+        const response = await axios.get(`https://api.lolhuman.xyz/api/instagram`, {
+            params: { apikey: "Nhebotx", url }
+        });
+
+        // Hapus API key dari response sebelum dikirim ke pengguna
+        let modifiedData = { ...response.data, creator: "YudzDev" };
+        delete modifiedData.apikey;  // Hapus key jika ada dalam response
+
+        res.json(modifiedData);
+    } catch (error) {
+        console.error('Error fetching Instagram API:', error);
+        res.status(500).json({ error: 'Gagal mendapatkan data dari Instagram API' });
+    }
+});
+
+// Endpoint YouTube Search
+app.get('/ytsearch', async (req, res) => {
+    const q = req.query.q;
+    if (!q) return res.status(400).json({ error: "Parameter 'q' diperlukan" });
+
+    try {
+        const response = await axios.get(`https://api.skyzopedia.us.kg/api/search/ytsearch`, {
+            params: { q }
+        });
+
+        let modifiedData = { ...response.data, creator: "YudzDev" };
+        res.json(modifiedData);
+    } catch (error) {
+        console.error('Error fetching YouTube Search API:', error);
+        res.status(500).json({ error: 'Gagal mendapatkan hasil pencarian dari YouTube' });
+    }
+});
+
+// Endpoint Remini Image Enhancer
+app.get('/remini', async (req, res) => {
+    const url = req.query.url;
+    if (!url) return res.status(400).json({ error: "Parameter 'url' diperlukan" });
+
+    try {
+        const response = await axios.get(`https://api.skyzopedia.us.kg/api/tools/remini`, {
+            params: { url }
+        });
+
+        let modifiedData = { ...response.data, creator: "YudzDev" };
+        res.json(modifiedData);
+    } catch (error) {
+        console.error('Error fetching Remini API:', error);
+        res.status(500).json({ error: 'Gagal memproses gambar dengan Remini' });
+    }
+});
+
+// Endpoint Pornhub Logo Maker
+app.get('/pornhub', async (req, res) => {
+    const { text1, text2 } = req.query;
+    if (!text1 || !text2) return res.status(400).json({ error: "Parameter 'text1' dan 'text2' diperlukan" });
+
+    try {
+        const response = await axios.get(`https://api.skyzopedia.us.kg/api/imagecreator/pornhub`, {
+            params: { text1, text2 }
+        });
+
+        let modifiedData = { ...response.data, creator: "YudzDev" };
+        res.json(modifiedData);
+    } catch (error) {
+        console.error('Error fetching Pornhub Logo API:', error);
+        res.status(500).json({ error: 'Gagal mendapatkan data dari Pornhub Logo API' });
+    }
+});
+
 app.listen(3000, () => {
     console.log('🚀 Server berjalan di https://api.sycze.my.id/ad');
 });
