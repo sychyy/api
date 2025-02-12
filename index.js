@@ -1,6 +1,15 @@
+// Import module
 const express = require('express');
 const axios = require('axios');
 const app = express();
+
+// Daftar kategori yang tersedia
+const categories = [
+    "waifu", "neko", "shinobu", "megumin", "bully", "cuddle", "cry", "hug", "awoo",
+    "kiss", "lick", "pat", "smug", "bonk", "yeet", "blush", "smile", "wave", "highfive",
+    "handhold", "nom", "bite", "glomp", "slap", "kill", "kick", "happy", "wink", "poke",
+    "dance", "cringe"
+];
 
 async function fetchImage(url, res) {
     try {
@@ -461,6 +470,22 @@ app.get('/weather', async (req, res) => {
         console.error('Error fetching Weather API:', error);
         res.status(500).json({ error: 'Gagal mendapatkan data cuaca dari Popcat' });
     }
+});
+
+// Membuat endpoint dinamis berdasarkan kategori
+categories.forEach(category => {
+    app.get(`/${category}`, async (req, res) => {
+        try {
+            // Request ke API waifu.pics
+            const response = await axios.get(`https://api.waifu.pics/sfw/${category}`);
+            
+            // Kirim hasilnya langsung ke pengguna
+            res.json(response.data);
+        } catch (error) {
+            console.error(`Error fetching ${category}:`, error);
+            res.status(500).json({ error: `Gagal mengambil data untuk kategori ${category}` });
+        }
+    });
 });
 
 app.listen(3000, () => {
