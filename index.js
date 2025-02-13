@@ -890,7 +890,7 @@ async function createGif(images, outputGif) {
 }
 
 // Endpoint untuk menghasilkan GIF brat
-app.get("/bratgif", async (req, res) => {
+app.get('/bratgif', async (req, res) => {
     const text = req.query.text;
     if (!text) return res.status(400).send("Masukkan teks di parameter `text`");
 
