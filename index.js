@@ -1,5 +1,10 @@
 // Import module
 const express = require('express');
+const { chromium } = require("playwright");
+const fs = require("fs");
+const GIFEncoder = require("gifencoder");
+const { createCanvas, loadImage } = require("canvas");
+const path = require("path");
 const axios = require('axios');
 const app = express();
 
@@ -832,6 +837,71 @@ app.get('/profilecanvas', async (req, res) => {
     } catch (error) {
         console.error('Error fetching Profile Canvas:', error);
         res.status(500).json({ error: 'Gagal mendapatkan Profile Canvas' });
+    }
+});
+// Fungsi untuk generate brat image per kata
+async function generateBratImages(text) {
+    const browser = await chromium.launch({ headless: true });
+    const page = await browser.newPage();
+    await page.goto("https://www.bratgenerator.com");
+
+    const consentButtonSelector = "#onetrust-accept-btn-handler";
+    if (await page.$(consentButtonSelector)) {
+        await page.click(consentButtonSelector);
+        await page.waitForTimeout(500);
+    }
+
+    await page.click("#toggleButtonWhite");
+
+    let words = text.split(" ");
+    let imagePaths = [];
+
+    for (let i = 0; i < words.length; i++) {
+        let partialText = words.slice(0, i + 1).join(" ");
+        await page.fill("#textInput", partialText);
+        let imagePath = `brat_${i + 1}.png`;
+        await page.locator("#textOverlay").screenshot({ path: imagePath });
+        imagePaths.push(imagePath);
+    }
+
+    await browser.close();
+    return imagePaths;
+}
+
+// Fungsi untuk menggabungkan gambar jadi GIF
+async function createGif(images, outputGif) {
+    const encoder = new GIFEncoder(400, 200);
+    encoder.createReadStream().pipe(fs.createWriteStream(outputGif));
+    encoder.start();
+    encoder.setRepeat(0);
+    encoder.setDelay(900); // 0.9s per frame
+    encoder.setQuality(10);
+
+    const canvas = createCanvas(400, 200);
+    const ctx = canvas.getContext("2d");
+
+    for (let imagePath of images) {
+        let img = await loadImage(imagePath);
+        ctx.drawImage(img, 0, 0, 400, 200);
+        encoder.addFrame(ctx);
+    }
+
+    encoder.finish();
+}
+
+// Endpoint untuk menghasilkan GIF brat
+app.get("/bratgif", async (req, res) => {
+    const text = req.query.text;
+    if (!text) return res.status(400).send("Masukkan teks di parameter `text`");
+
+    try {
+        const images = await generateBratImages(text);
+        const outputGif = path.join(__dirname, "brat_animation.gif");
+        await createGif(images, outputGif);
+        res.sendFile(outputGif);
+    } catch (error) {
+        console.error("Error:", error);
+        res.status(500).send("Terjadi kesalahan dalam membuat GIF brat");
     }
 });
 
