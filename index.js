@@ -1,10 +1,6 @@
 // Import module
 const express = require('express');
-const { chromium } = require("playwright");
-const fs = require("fs");
-const GIFEncoder = require("gifencoder");
-const { createCanvas, loadImage } = require("canvas");
-const path = require("path");
+const { createCanvas, loadImage } = require('canvas');
 const axios = require('axios');
 const app = express();
 
@@ -839,71 +835,16 @@ app.get('/profilecanvas', async (req, res) => {
         res.status(500).json({ error: 'Gagal mendapatkan Profile Canvas' });
     }
 });
-// Fungsi untuk generate brat image per kata
-async function generateBratImages(text) {
-    const browser = await chromium.launch({ headless: true });
-    const page = await browser.newPage();
-    await page.goto("https://www.bratgenerator.com");
 
-    const consentButtonSelector = "#onetrust-accept-btn-handler";
-    if (await page.$(consentButtonSelector)) {
-        await page.click(consentButtonSelector);
-        await page.waitForTimeout(500);
-    }
-
-    await page.click("#toggleButtonWhite");
-
-    let words = text.split(" ");
-    let imagePaths = [];
-
-    for (let i = 0; i < words.length; i++) {
-        let partialText = words.slice(0, i + 1).join(" ");
-        await page.fill("#textInput", partialText);
-        let imagePath = `brat_${i + 1}.png`;
-        await page.locator("#textOverlay").screenshot({ path: imagePath });
-        imagePaths.push(imagePath);
-    }
-
-    await browser.close();
-    return imagePaths;
-}
-
-// Fungsi untuk menggabungkan gambar jadi GIF
-async function createGif(images, outputGif) {
-    const encoder = new GIFEncoder(400, 200);
-    encoder.createReadStream().pipe(fs.createWriteStream(outputGif));
-    encoder.start();
-    encoder.setRepeat(0);
-    encoder.setDelay(900); // 0.9s per frame
-    encoder.setQuality(10);
-
-    const canvas = createCanvas(400, 200);
-    const ctx = canvas.getContext("2d");
-
-    for (let imagePath of images) {
-        let img = await loadImage(imagePath);
-        ctx.drawImage(img, 0, 0, 400, 200);
-        encoder.addFrame(ctx);
-    }
-
-    encoder.finish();
-}
-
-// Endpoint untuk menghasilkan GIF brat
-module.exports = (req, res) => {
-    if (req.url.startsWith("/bratgif")) {
-        return bratGifHandler(req, res);
-    }
-    res.status(404).json({ error: "Endpoint tidak ditemukan" });
-};
-
-async function bratGifHandler(req, res) {
-    const text = new URL(req.url, `http://${req.headers.host}`).searchParams.get("text");
+app.get('/bratgif', async (req, res) => {
+    const text = req.query.text;
     if (!text) return res.status(400).json({ error: "Masukkan teks di parameter `text`" });
 
     try {
-        const images = await generateBratImages(text);
-        const outputGif = "/tmp/brat_animation.gif"; // Simpan di /tmp untuk Vercel
+        const words = text.split(" ");
+        const images = await generateBratImages(words);
+        const outputGif = "/tmp/brat_animation.gif"; // Simpan sementara di /tmp
+
         await createGif(images, outputGif);
         res.setHeader("Content-Type", "image/gif");
         res.sendFile(outputGif);
@@ -911,9 +852,40 @@ async function bratGifHandler(req, res) {
         console.error("Error:", error);
         res.status(500).json({ error: "Terjadi kesalahan dalam membuat GIF brat" });
     }
+});
+
+function generateBratImages(words) {
+    return Promise.all(words.map(async (word, index) => {
+        const textToShow = words.slice(0, index + 1).join(" ");
+        const canvas = createCanvas(500, 200);
+        const ctx = canvas.getContext("2d");
+
+        ctx.fillStyle = "white";
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        ctx.fillStyle = "black";
+        ctx.font = "30px Arial";
+        ctx.fillText(textToShow, 50, 100);
+
+        return canvas.toBuffer();
+    }));
 }
 
-// Fungsi lainnya seperti generateBratImages dan createGif tetap sama
+async function createGif(images, outputPath) {
+    const GIFEncoder = require("gifencoder");
+    const fs = require("fs");
+    const encoder = new GIFEncoder(500, 200);
+    encoder.createReadStream().pipe(fs.createWriteStream(outputPath));
+    encoder.start();
+    encoder.setRepeat(0);
+    encoder.setDelay(900);
+    encoder.setQuality(10);
+
+    for (let img of images) {
+        encoder.addFrame(img);
+    }
+
+    encoder.finish();
+}
 
 app.listen(3000, () => {
     console.log('🚀 Server berjalan di https://api.sycze.my.id/ad');
