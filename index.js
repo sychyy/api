@@ -1,7 +1,9 @@
 // Import module
-const express = require('express');
+const express = require("express");
 const Jimp = require("jimp");
-const GIFEncoder = require('gifencoder');
+const GIFEncoder = require("gifencoder");
+const fs = require("fs-extra");
+const path = require("path");
 const axios = require('axios');
 const app = express();
 
@@ -839,14 +841,17 @@ app.get('/profilecanvas', async (req, res) => {
 
 app.get('/bratgif', async (req, res) => {
     const text = req.query.text;
-    if (!text) return res.status(400).json({ error: "Masukkan teks di parameter `text`" });
+    if (!text) {
+        return res.status(400).json({ error: "Masukkan teks di parameter `text`" });
+    }
 
     try {
         const words = text.split(" ");
         const images = await generateBratImages(words);
-        const outputGif = "/tmp/brat_animation.gif"; // Simpan sementara di /tmp
+        const outputGif = path.join("/tmp", "brat_animation.gif");
 
         await createGif(images, outputGif);
+
         res.setHeader("Content-Type", "image/gif");
         res.sendFile(outputGif);
     } catch (error) {
@@ -861,25 +866,33 @@ async function generateBratImages(words) {
         const image = new Jimp(500, 200, "#FFFFFF");
         const font = await Jimp.loadFont(Jimp.FONT_SANS_32_BLACK);
         image.print(font, 50, 100, textToShow);
-        return await image.getBufferAsync(Jimp.MIME_PNG);
+        return image.bitmap.data; // Mengembalikan buffer pixel
     }));
 }
 
 async function createGif(images, outputPath) {
-    const GIFEncoder = require("gifencoder");
-    const fs = require("fs");
     const encoder = new GIFEncoder(500, 200);
-    encoder.createReadStream().pipe(fs.createWriteStream(outputPath));
+    const stream = encoder.createReadStream();
+    await fs.ensureFile(outputPath);
+    const writeStream = fs.createWriteStream(outputPath);
+
+    stream.pipe(writeStream);
+
     encoder.start();
     encoder.setRepeat(0);
     encoder.setDelay(900);
     encoder.setQuality(10);
 
-    for (let img of images) {
-        encoder.addFrame(img);
+    for (let imgData of images) {
+        encoder.addFrame(imgData);
     }
 
     encoder.finish();
+
+    return new Promise((resolve, reject) => {
+        writeStream.on("finish", resolve);
+        writeStream.on("error", reject);
+    });
 }
 
 app.listen(3000, () => {
