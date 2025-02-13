@@ -3,6 +3,10 @@ const express = require('express');
 const axios = require('axios');
 const app = express();
 
+// Avatar & Background Default
+const defaultAvatar = "https://files.catbox.moe/mxw8op.jpg";
+const defaultBackground = "https://files.catbox.moe/ref84k.png";
+
 // Daftar kategori yang tersedia
 const categories = [
     "waifu", "neko", "shinobu", "megumin", "bully", "cuddle", "cry", "hug", "awoo",
@@ -763,6 +767,71 @@ app.get('/pornhub', async (req, res) => {
     } catch (error) {
         console.error('Error fetching Pornhub Logo API:', error);
         res.status(500).json({ error: 'Gagal mendapatkan data dari Pornhub Logo API' });
+    }
+});
+
+// Endpoint Brat2
+app.get('/brat2', async (req, res) => {
+    const text = req.query.text;
+    if (!text) return res.status(400).json({ error: "Parameter 'text' diperlukan" });
+
+    try {
+        // Panggil API Brat yang langsung mengembalikan gambar
+        const response = await axios.get(`https://brat.caliphdev.com/api/brat`, {
+            params: { text },
+            responseType: 'arraybuffer' // Pastikan response berupa gambar
+        });
+
+        // Set header agar browser tahu ini gambar
+        res.set('Content-Type', 'image/png');
+        res.send(response.data);
+    } catch (error) {
+        console.error('Error fetching Brat2:', error);
+        res.status(500).json({ error: 'Gagal mendapatkan gambar dari Brat API' });
+    }
+});
+
+// Endpoint Level Canvas
+app.get('/levelcanvas', async (req, res) => {
+    const { backgroundURL = defaultBackground, avatarURL = defaultAvatar, fromLevel, toLevel, name } = req.query;
+    
+    if (!fromLevel || !toLevel || !name) {
+        return res.status(400).json({ error: "Parameter 'fromLevel', 'toLevel', dan 'name' diperlukan" });
+    }
+
+    try {
+        const response = await axios.get(`https://api.siputzx.my.id/api/canvas/level-up`, {
+            params: { backgroundURL, avatarURL, fromLevel, toLevel, name },
+            responseType: 'arraybuffer'
+        });
+
+        res.set('Content-Type', 'image/png');
+        res.send(response.data);
+    } catch (error) {
+        console.error('Error fetching Level Canvas:', error);
+        res.status(500).json({ error: 'Gagal mendapatkan Level Canvas' });
+    }
+});
+
+// Endpoint Profile Canvas
+app.get('/profilecanvas', async (req, res) => {
+    const { backgroundURL = defaultBackground, avatarURL = defaultAvatar, rankName, rankId, requireExp, level, name, exp } = req.query;
+
+    if (!rankName || !rankId || !requireExp || !level || !name || !exp) {
+        return res.status(400).json({ error: "Semua parameter diperlukan" });
+    }
+
+    try {
+        const response = await axios.get(`https://api.siputzx.my.id/api/canvas/profile`, {
+            params: { backgroundURL, avatarURL, rankName, rankId, requireExp, level, name, exp },
+            responseType: 'arraybuffer'
+        });
+
+        res.set('Content-Type', 'image/png');
+        res.send(response.data);
+    } catch (error) {
+        console.error('Error fetching Profile Canvas:', error);
+        res.status(500).json({ error: 'Gagal mendapatkan Profile Canvas' });
     }
 });
 
