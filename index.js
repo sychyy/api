@@ -890,20 +890,30 @@ async function createGif(images, outputGif) {
 }
 
 // Endpoint untuk menghasilkan GIF brat
-app.get('/bratgif', async (req, res) => {
-    const text = req.query.text;
-    if (!text) return res.status(400).send("Masukkan teks di parameter `text`");
+module.exports = (req, res) => {
+    if (req.url.startsWith("/bratgif")) {
+        return bratGifHandler(req, res);
+    }
+    res.status(404).json({ error: "Endpoint tidak ditemukan" });
+};
+
+async function bratGifHandler(req, res) {
+    const text = new URL(req.url, `http://${req.headers.host}`).searchParams.get("text");
+    if (!text) return res.status(400).json({ error: "Masukkan teks di parameter `text`" });
 
     try {
         const images = await generateBratImages(text);
-        const outputGif = path.join(__dirname, "brat_animation.gif");
+        const outputGif = "/tmp/brat_animation.gif"; // Simpan di /tmp untuk Vercel
         await createGif(images, outputGif);
+        res.setHeader("Content-Type", "image/gif");
         res.sendFile(outputGif);
     } catch (error) {
         console.error("Error:", error);
-        res.status(500).send("Terjadi kesalahan dalam membuat GIF brat");
+        res.status(500).json({ error: "Terjadi kesalahan dalam membuat GIF brat" });
     }
-});
+}
+
+// Fungsi lainnya seperti generateBratImages dan createGif tetap sama
 
 app.listen(3000, () => {
     console.log('🚀 Server berjalan di https://api.sycze.my.id/ad');
