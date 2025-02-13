@@ -1,6 +1,6 @@
 // Import module
 const express = require('express');
-const { createCanvas, loadImage } = require('canvas');
+const Jimp = require("jimp");
 const axios = require('axios');
 const app = express();
 
@@ -854,19 +854,13 @@ app.get('/bratgif', async (req, res) => {
     }
 });
 
-function generateBratImages(words) {
+async function generateBratImages(words) {
     return Promise.all(words.map(async (word, index) => {
         const textToShow = words.slice(0, index + 1).join(" ");
-        const canvas = createCanvas(500, 200);
-        const ctx = canvas.getContext("2d");
-
-        ctx.fillStyle = "white";
-        ctx.fillRect(0, 0, canvas.width, canvas.height);
-        ctx.fillStyle = "black";
-        ctx.font = "30px Arial";
-        ctx.fillText(textToShow, 50, 100);
-
-        return canvas.toBuffer();
+        const image = new Jimp(500, 200, "#FFFFFF");
+        const font = await Jimp.loadFont(Jimp.FONT_SANS_32_BLACK);
+        image.print(font, 50, 100, textToShow);
+        return await image.getBufferAsync(Jimp.MIME_PNG);
     }));
 }
 
