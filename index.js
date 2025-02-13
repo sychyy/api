@@ -1,6 +1,7 @@
 // Import module
 const express = require('express');
 const Jimp = require("jimp");
+const GIFEncoder = require('gifencoder');
 const axios = require('axios');
 const app = express();
 
