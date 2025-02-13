@@ -1,9 +1,5 @@
 // Import module
-const express = require("express");
-const Jimp = require("jimp");
-const GIFEncoder = require("gifencoder");
-const fs = require("fs-extra");
-const path = require("path");
+const express = require('express');
 const axios = require('axios');
 const app = express();
 
@@ -838,62 +834,6 @@ app.get('/profilecanvas', async (req, res) => {
         res.status(500).json({ error: 'Gagal mendapatkan Profile Canvas' });
     }
 });
-
-app.get('/bratgif', async (req, res) => {
-    const text = req.query.text;
-    if (!text) {
-        return res.status(400).json({ error: "Masukkan teks di parameter `text`" });
-    }
-
-    try {
-        const words = text.split(" ");
-        const images = await generateBratImages(words);
-        const outputGif = path.join("/tmp", "brat_animation.gif");
-
-        await createGif(images, outputGif);
-
-        res.setHeader("Content-Type", "image/gif");
-        res.sendFile(outputGif);
-    } catch (error) {
-        console.error("Error:", error);
-        res.status(500).json({ error: "Terjadi kesalahan dalam membuat GIF brat" });
-    }
-});
-
-async function generateBratImages(words) {
-    return Promise.all(words.map(async (word, index) => {
-        const textToShow = words.slice(0, index + 1).join(" ");
-        const image = new Jimp(500, 200, "#FFFFFF");
-        const font = await Jimp.loadFont(Jimp.FONT_SANS_32_BLACK);
-        image.print(font, 50, 100, textToShow);
-        return image.bitmap.data; // Mengembalikan buffer pixel
-    }));
-}
-
-async function createGif(images, outputPath) {
-    const encoder = new GIFEncoder(500, 200);
-    const stream = encoder.createReadStream();
-    await fs.ensureFile(outputPath);
-    const writeStream = fs.createWriteStream(outputPath);
-
-    stream.pipe(writeStream);
-
-    encoder.start();
-    encoder.setRepeat(0);
-    encoder.setDelay(900);
-    encoder.setQuality(10);
-
-    for (let imgData of images) {
-        encoder.addFrame(imgData);
-    }
-
-    encoder.finish();
-
-    return new Promise((resolve, reject) => {
-        writeStream.on("finish", resolve);
-        writeStream.on("error", reject);
-    });
-}
 
 app.listen(3000, () => {
     console.log('🚀 Server berjalan di https://api.sycze.my.id/ad');
