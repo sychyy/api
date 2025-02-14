@@ -15,6 +15,15 @@ const categories = [
     "dance", "cringe"
 ];
 
+// Daftar game endpoint
+const games = [
+    "asahotak", "caklontong", "family100", "lengkapikalimat", "susunkata",
+    "tebaktebakan", "tebakbendera", "tebakgambar", "tebakgame", "tebakhewan",
+    "tebakjkt", "kabupaten", "tebakkalimat", "karakter-freefire", "tebakkata",
+    "tebakkimia", "tebaklagu", "tebaklirik", "tebaklogo", "siapakahaku",
+    "surah", "tebakwarna", "tekateki"
+];
+
 // Membuat endpoint dinamis berdasarkan kategori
 const nsfwCategories = [
     "waifu",
@@ -833,6 +842,25 @@ app.get('/profilecanvas', async (req, res) => {
         console.error('Error fetching Profile Canvas:', error);
         res.status(500).json({ error: 'Gagal mendapatkan Profile Canvas' });
     }
+});
+
+// Generate route secara otomatis berdasarkan daftar game
+games.forEach(game => {
+    app.get(`/game/${game}`, async (req, res) => {
+        try {
+            const apiUrl = `https://api.siputzx.my.id/api/games/${game}`;
+            const response = await axios.get(apiUrl);
+
+            // Mengirimkan response JSON langsung dari API sumber
+            res.json(response.data);
+        } catch (error) {
+            console.error(`Error fetching data for /game/${game}:`, error);
+            res.status(500).json({ 
+                status: false, 
+                message: `Gagal mengambil data dari /game/${game}` 
+            });
+        }
+    });
 });
 
 // Endpoint untuk download data Pinterest
