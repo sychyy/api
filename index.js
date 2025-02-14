@@ -835,6 +835,32 @@ app.get('/profilecanvas', async (req, res) => {
     }
 });
 
+// Endpoint untuk download data Pinterest
+app.get('/pintdl', async (req, res) => {
+    const { url } = req.query;
+    if (!url) {
+        return res.status(400).json({ 
+            status: false, 
+            message: "Masukkan URL Pinterest!"
+        });
+    }
+
+    try {
+        // Menggunakan API pihak ketiga untuk mengambil JSON
+        const apiUrl = `https://api.siputzx.my.id/api/d/pinterest?url=${encodeURIComponent(url)}`;
+        const response = await axios.get(apiUrl);
+
+        // Mengirimkan respons JSON yang diterima dari API
+        res.json(response.data);
+    } catch (error) {
+        console.error('Error fetching Pinterest data:', error);
+        res.status(500).json({ 
+            status: false, 
+            message: "Gagal mengambil data Pinterest"
+        });
+    }
+});
+
 app.listen(3000, () => {
     console.log('🚀 Server berjalan di https://api.sycze.my.id/ad');
 });
