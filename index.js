@@ -1,11 +1,7 @@
 // Import module
-const express = require("express");
-const axios = require("axios");
-const cheerio = require("cheerio");
-
+const express = require('express');
+const axios = require('axios');
 const app = express();
-// Middleware JSON
-app.use(express.json());
 
 // Avatar & Background Default
 const defaultAvatar = "https://files.catbox.moe/mxw8op.jpg";
@@ -867,72 +863,6 @@ games.forEach(game => {
     });
 });
 
-async function igdl(url) {
-    try {
-        const baseApi = "https://savereels.io/api/ajaxSearch";
-        const postData = new URLSearchParams({
-            "q": url,
-            "w": "",
-            "v": "v2",
-            "lang": "en",
-            "cftoken": ""
-        });
-
-        const headers = {
-            "Content-Type": "application/x-www-form-urlencoded; charset=UTF-8",
-            "Accept": "*/*",
-            "X-Requested-With": "XMLHttpRequest",
-            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/110.0.0.0 Safari/537.36"
-        };
-
-        const response = await axios.post(baseApi, postData.toString(), { headers });
-
-        if (response.status === 200) {
-            const $ = cheerio.load(response.data);
-
-            const thumb = $("img").attr("src");
-            const video = $("a").attr("href");
-
-            if (video) {
-                return {
-                    status: "success",
-                    data: {
-                        thumb,
-                        dl_url: video
-                    }
-                };
-            } else {
-                return {
-                    status: "error",
-                    message: "Gagal mengambil data video!"
-                };
-            }
-        } else {
-            return {
-                status: "error",
-                message: `Error dengan status code ${response.status}`
-            };
-        }
-    } catch (error) {
-        return {
-            status: "error",
-            message: `Terjadi kesalahan: ${error.message}`
-        };
-    }
-}
-
-// Endpoint untuk Instagram Downloader
-app.get("/api/igdll", async (req, res) => {
-    const { url } = req.query;
-    if (!url) {
-        return res.status(400).json({ status: "error", message: "Parameter 'url' diperlukan!" });
-    }
-
-    const result = await igdl(url);
-    res.json(result);
-});
-
-// Menjalankan server
 
 // Endpoint untuk download data Pinterest
 app.get('/pintdl', async (req, res) => {
