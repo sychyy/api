@@ -1,14 +1,21 @@
 {
   "name": "sycze-api",
   "version": "1.0.0",
-  "description": "API Proxy untuk Rest Api dan Yotsuba AI",
+  "description": "API Proxy untuk Rest API dan Yotsuba AI",
   "main": "index.js",
   "type": "commonjs",
   "scripts": {
-    "start": "node index.js"
+    "start": "node index.js",
+    "dev": "nodemon index.js"
   },
   "dependencies": {
     "express": "^4.18.2",
-    "axios": "^1.5.1"
+    "axios": "^1.5.1",
+    "cheerio": "^1.0.0-rc.12",
+    "cors": "^2.8.5",
+    "dotenv": "^16.0.3"
+  },
+  "devDependencies": {
+    "nodemon": "^3.0.1"
   }
 }

@@ -2,6 +2,8 @@
 const express = require('express');
 const axios = require('axios');
 const app = express();
+const igdl3Route = require('./routes/igdl3');
+
 
 // Avatar & Background Default
 const defaultAvatar = "https://files.catbox.moe/mxw8op.jpg";
@@ -862,6 +864,8 @@ games.forEach(game => {
         }
     });
 });
+
+app.use('/igdl3', igdl3Route);
 
 // Endpoint untuk download data Pinterest
 app.get('/pintdl', async (req, res) => {
