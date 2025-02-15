@@ -871,7 +871,7 @@ games.forEach(game => {
 
 
 // Instagram Downloader
-app.get("/igdl", async (req, res) => {
+app.get("/igdl3", async (req, res) => {
     const { url } = req.query;
     if (!url) {
         return res.status(400).json({ status: "error", message: "URL Instagram diperlukan!" });
