@@ -1,9 +1,12 @@
 // Import module
-const express = require('express');
-const axios = require('axios');
-const app = express();
-const igdl3Route = require('./routes/igdl3');
+const express = require("express");
+const axios = require("axios");
+const cheerio = require("cheerio");
+const cors = require("cors");
 
+const app = express();
+// Middleware CORS (Opsional, bisa dihapus jika tidak perlu)
+app.use(cors());
 
 // Avatar & Background Default
 const defaultAvatar = "https://files.catbox.moe/mxw8op.jpg";
@@ -865,7 +868,54 @@ games.forEach(game => {
     });
 });
 
-app.use('/igdl3', igdl3Route);
+
+
+// Instagram Downloader
+app.get("/igdl", async (req, res) => {
+    const { url } = req.query;
+    if (!url) {
+        return res.status(400).json({ status: "error", message: "URL Instagram diperlukan!" });
+    }
+
+    try {
+        const base_api = "https://savereels.io/api/ajaxSearch";
+        const headers = {
+            "Content-Type": "application/x-www-form-urlencoded; charset=UTF-8",
+            "Accept": "*/*",
+            "X-Requested-With": "XMLHttpRequest",
+            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, seperti Gecko) Chrome/120.0.0.0 Safari/537.36"
+        };
+        const postData = new URLSearchParams({
+            q: url,
+            w: "",
+            v: "v2",
+            lang: "en",
+            cftoken: ""
+        }).toString();
+
+        const response = await axios.post(base_api, postData, { headers });
+        const $ = cheerio.load(response.data);
+
+        const thumb = $("img").attr("src") || null;
+        const vid_url = $("a").attr("href") || null;
+
+        if (!vid_url) {
+            return res.status(500).json({ status: "error", message: "Gagal mengambil data video!" });
+        }
+
+        res.json({
+            status: "success",
+            codeby: "SYCZE",
+            data: {
+                thumb,
+                dl_url: vid_url
+            }
+        });
+
+    } catch (error) {
+        res.status(500).json({ status: "error", message: `Terjadi kesalahan: ${error.message}` });
+    }
+});
 
 // Endpoint untuk download data Pinterest
 app.get('/pintdl', async (req, res) => {
