@@ -2,11 +2,10 @@
 const express = require("express");
 const axios = require("axios");
 const cheerio = require("cheerio");
-const cors = require("cors");
 
 const app = express();
-// Middleware CORS (Opsional, bisa dihapus jika tidak perlu)
-app.use(cors());
+// Middleware JSON
+app.use(express.json());
 
 // Avatar & Background Default
 const defaultAvatar = "https://files.catbox.moe/mxw8op.jpg";
@@ -868,54 +867,72 @@ games.forEach(game => {
     });
 });
 
-
-
-// Instagram Downloader
-app.get("/igdl3", async (req, res) => {
-    const { url } = req.query;
-    if (!url) {
-        return res.status(400).json({ status: "error", message: "URL Instagram diperlukan!" });
-    }
-
+async function igdl(url) {
     try {
-        const base_api = "https://savereels.io/api/ajaxSearch";
+        const baseApi = "https://savereels.io/api/ajaxSearch";
+        const postData = new URLSearchParams({
+            "q": url,
+            "w": "",
+            "v": "v2",
+            "lang": "en",
+            "cftoken": ""
+        });
+
         const headers = {
             "Content-Type": "application/x-www-form-urlencoded; charset=UTF-8",
             "Accept": "*/*",
             "X-Requested-With": "XMLHttpRequest",
-            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, seperti Gecko) Chrome/120.0.0.0 Safari/537.36"
+            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/110.0.0.0 Safari/537.36"
         };
-        const postData = new URLSearchParams({
-            q: url,
-            w: "",
-            v: "v2",
-            lang: "en",
-            cftoken: ""
-        }).toString();
 
-        const response = await axios.post(base_api, postData, { headers });
-        const $ = cheerio.load(response.data);
+        const response = await axios.post(baseApi, postData.toString(), { headers });
 
-        const thumb = $("img").attr("src") || null;
-        const vid_url = $("a").attr("href") || null;
+        if (response.status === 200) {
+            const $ = cheerio.load(response.data);
 
-        if (!vid_url) {
-            return res.status(500).json({ status: "error", message: "Gagal mengambil data video!" });
-        }
+            const thumb = $("img").attr("src");
+            const video = $("a").attr("href");
 
-        res.json({
-            status: "success",
-            codeby: "SYCZE",
-            data: {
-                thumb,
-                dl_url: vid_url
+            if (video) {
+                return {
+                    status: "success",
+                    data: {
+                        thumb,
+                        dl_url: video
+                    }
+                };
+            } else {
+                return {
+                    status: "error",
+                    message: "Gagal mengambil data video!"
+                };
             }
-        });
-
+        } else {
+            return {
+                status: "error",
+                message: `Error dengan status code ${response.status}`
+            };
+        }
     } catch (error) {
-        res.status(500).json({ status: "error", message: `Terjadi kesalahan: ${error.message}` });
+        return {
+            status: "error",
+            message: `Terjadi kesalahan: ${error.message}`
+        };
     }
+}
+
+// Endpoint untuk Instagram Downloader
+app.get("/api/igdll", async (req, res) => {
+    const { url } = req.query;
+    if (!url) {
+        return res.status(400).json({ status: "error", message: "Parameter 'url' diperlukan!" });
+    }
+
+    const result = await igdl(url);
+    res.json(result);
 });
+
+// Menjalankan server
 
 // Endpoint untuk download data Pinterest
 app.get('/pintdl', async (req, res) => {
