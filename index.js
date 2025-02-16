@@ -4,8 +4,8 @@ const axios = require('axios');
 const app = express();
 
 // Avatar & Background Default
-const defaultAvatar = "https://files.catbox.moe/mxw8op.jpg";
-const defaultBackground = "https://files.catbox.moe/ref84k.png";
+const defaultAvatar = "https://i.ibb.co.com/JWhDgQLc/a6d806216b8c81360ff7590c2bbdd989.jpg";
+const defaultBackground = "https://i.ibb.co.com/cSbd86Cc/20250213-082544.png";
 
 // Daftar kategori yang tersedia
 const categories = [
@@ -51,7 +51,7 @@ app.get('/sadcat', (req, res) => {
 
 // Endpoint untuk Nokia
 app.get('/nokia', (req, res) => {
-    const image = req.query.image || 'https://files.catbox.moe/7o0wuc.jpg';
+    const image = req.query.image || 'https://i.ibb.co.com/0R7Cc9FZ/image.jpg';
     const apiUrl = `https://api.popcat.xyz/nokia?image=${encodeURIComponent(image)}`;
     fetchImage(apiUrl, res);
 });
@@ -65,14 +65,14 @@ app.get('/oogway', (req, res) => {
 
 // Endpoint untuk Communism
 app.get('/communism', (req, res) => {
-    const image = req.query.image || 'https://files.catbox.moe/7o0wuc.jpg';
+    const image = req.query.image || 'https://i.ibb.co.com/0R7Cc9FZ/image.jpg';
     const apiUrl = `https://api.popcat.xyz/communism?image=${encodeURIComponent(image)}`;
     fetchImage(apiUrl, res);
 });
 
 // Endpoint untuk Jail
 app.get('/jail', (req, res) => {
-    const image = req.query.image || 'https://files.catbox.moe/7o0wuc.jpg';
+    const image = req.query.image || 'https://i.ibb.co.com/0R7Cc9FZ/image.jpg';
     const apiUrl = `https://api.popcat.xyz/jail?image=${encodeURIComponent(image)}`;
     fetchImage(apiUrl, res);
 });
