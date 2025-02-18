@@ -541,6 +541,24 @@ app.get('/xnxx', async (req, res) => {
     }
 });
 
+app.get("/bratvid", async (req, res) => {
+  try {
+    const text = req.query.text;
+    if (!text) return res.status(400).send("Masukkan parameter ?text=");
+
+    const response = await axios.get(
+      `https://brat.caliphdev.com/api/brat/animate?text=${encodeURIComponent(text)}`,
+      { responseType: "stream" }
+    );
+
+    res.setHeader("Content-Type", response.headers["content-type"]);
+    response.data.pipe(res);
+  } catch (error) {
+    console.error("Error:", error);
+    res.status(500).json({ status: "error", message: "Gagal mengambil video!" });
+  }
+});
+
 // Endpoint XVIDEO
 app.get('/xvideo', async (req, res) => {
     const message = req.query.message;
