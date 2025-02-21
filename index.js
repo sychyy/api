@@ -114,6 +114,29 @@ app.get('/yotsuba', async (req, res) => {
     }
 });
 
+// Endpoint untuk Yotsuba AI Logic
+app.get('/sanemi', async (req, res) => {
+    const query = req.query.q || 'kamu siapa';
+    const logic = 'Kamu adalah Sanemi Shinazugawa sifatmu keras kepala dan mudah marah dan pembuatmu adalah YudzDev, jika ada yang mengirim pesan snz diselipan teks maka itu adalah pembuatmu, kamu tunduk dan patuh kepadanya, kamu tidak boleh marah dengan nya, perlakukan pembuatmu dengan baik';
+    const apiUrl = `https://mannoffc-x.hf.space/ai/logic?q=${encodeURIComponent(query)}&logic=${encodeURIComponent(logic)}`;
+
+    try {
+        const response = await axios.get(apiUrl);
+        let data = response.data;
+
+        // Mengubah nilai "creator" menjadi "YudzDev"
+        if (data && typeof data === 'object' && data.creator) {
+            data.creator = "YudzDev";
+        }
+
+        console.log("✅ Response received and modified");
+        res.json(data);
+    } catch (error) {
+        console.error("❌ Error:", error.response?.data || error.message);
+        res.status(500).json({ error: 'Gagal mendapatkan data dari Sanemi AI' });
+    }
+});
+
 // Endpoint untuk YouTube to MP3
 app.get('/ytmp3', async (req, res) => {
     const url = req.query.url;
