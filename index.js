@@ -31,6 +31,19 @@ const nsfwCategories = [
     "trap",
     "blowjob"
 ];
+
+// Middleware untuk mengirim gambar langsung
+const fetchAndSendImage = async (url, res) => {
+  try {
+    const response = await axios.get(url, { responseType: "stream" });
+    res.setHeader("Content-Type", response.headers["content-type"]);
+    response.data.pipe(res);
+  } catch (error) {
+    console.error("Error:", error);
+    res.status(500).json({ status: "error", message: "Gagal mengambil gambar!" });
+  }
+};
+
 async function fetchImage(url, res) {
     try {
         const response = await axios.get(url, { responseType: 'arraybuffer' });
@@ -41,6 +54,15 @@ async function fetchImage(url, res) {
         res.status(500).send('An error occurred while fetching the image');
     }
 }
+
+app.get("/drake", async (req, res) => {
+    const { text1, text2 } = req.query;
+    if (!text1 || !text2) return res.json({ status: "error", message: "Parameter text1 & text2 diperlukan!" });
+
+    const url = `https://api.popcat.xyz/drake?text1=${encodeURIComponent(text1)}&text2=${encodeURIComponent(text2)}`;
+    const response = await axios.get(url, { responseType: "arraybuffer" });
+    res.set("Content-Type", "image/png").send(response.data);
+});
 
 // Endpoint untuk Sadcat
 app.get('/sadcat', (req, res) => {
@@ -598,6 +620,38 @@ app.get('/xvideo', async (req, res) => {
         console.error('Error fetching XVIDEO API:', error);
         res.status(500).json({ error: 'Gagal mendapatkan data dari XVIDEO API' });
     }
+});
+
+// Endpoint Drake Meme
+app.get("/drake", async (req, res) => {
+  const { text1, text2 } = req.query;
+  if (!text1 || !text2) return res.status(400).send("Masukkan parameter ?text1= &text2=");
+  const url = `https://api.popcat.xyz/drake?text1=${encodeURIComponent(text1)}&text2=${encodeURIComponent(text2)}`;
+  fetchAndSendImage(url, res);
+});
+
+// Endpoint Pikachu Meme
+app.get("/pikachu", async (req, res) => {
+  const { text } = req.query;
+  if (!text) return res.status(400).send("Masukkan parameter ?text=");
+  const url = `https://api.popcat.xyz/pikachu?text=${encodeURIComponent(text)}`;
+  fetchAndSendImage(url, res);
+});
+
+// Endpoint Opinion Meme
+app.get("/opinion", async (req, res) => {
+  const { image, text } = req.query;
+  if (!image || !text) return res.status(400).send("Masukkan parameter ?image= &text=");
+  const url = `https://api.popcat.xyz/opinion?image=${encodeURIComponent(image)}&text=${encodeURIComponent(text)}`;
+  fetchAndSendImage(url, res);
+});
+
+// Endpoint Who Would Win Meme
+app.get("/whowouldwin", async (req, res) => {
+  const { image1, image2 } = req.query;
+  if (!image1 || !image2) return res.status(400).send("Masukkan parameter ?image1= &image2=");
+  const url = `https://api.popcat.xyz/whowouldwin?image1=${encodeURIComponent(image1)}&image2=${encodeURIComponent(image2)}`;
+  fetchAndSendImage(url, res);
 });
 
 // Endpoint XNXX Downloader
