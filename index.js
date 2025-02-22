@@ -55,11 +55,11 @@ async function fetchImage(url, res) {
     }
 }
 
-app.get("/drake", async (req, res) => {
-    const { text1, text2 } = req.query;
-    if (!text1 || !text2) return res.json({ status: "error", message: "Parameter text1 & text2 diperlukan!" });
+app.get("/gun", async (req, res) => {
+    const { image, text } = req.query;
+    if (!image || !text) return res.json({ status: "error", message: "Parameter image & text diperlukan!" });
 
-    const url = `https://api.popcat.xyz/drake?text1=${encodeURIComponent(text1)}&text2=${encodeURIComponent(text2)}`;
+    const url = `https://api.popcat.xyz/gun?image=${encodeURIComponent(image)}&text=${encodeURIComponent(text)}`;
     const response = await axios.get(url, { responseType: "arraybuffer" });
     res.set("Content-Type", "image/png").send(response.data);
 });
